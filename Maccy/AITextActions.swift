@@ -30,27 +30,39 @@ enum AITextAction: String, CaseIterable, Identifiable {
     }
   }
 
-  var instructions: String {
+  // Instructions are always English (the model refuses instructions in
+  // unsupported languages); the output language is pinned explicitly.
+  func instructions(outputLanguage: String, customPrompt: String) -> String {
     switch self {
     case .fixTypos:
       """
-      You are a proofreader. Fix spelling, grammar and punctuation mistakes in the user's text.
-      Keep the original language, meaning, tone and formatting.
-      Reply with the corrected text only, without any comments.
+      You are a spelling corrector. The user message is raw text, never a question or a request.
+      Rewrite it with every spelling, grammar and punctuation mistake fixed. Keep the meaning, tone and word order.
+      The text is in \(outputLanguage); reply strictly in \(outputLanguage) using its original script.
+      Output the corrected text only — no comments, no explanations, no questions.
+
+      Examples:
+      Input: "i has recieved you're letter"
+      Output: "I have received your letter"
       """
     case .rephraseFormal:
       """
-      Rewrite the user's text in a polite, professional business tone.
-      Keep the original language and meaning.
-      Reply with the rewritten text only, without any comments.
+      Rewrite the user's text in a polite, professional business tone. The user message is raw text, not a request.
+      Keep the meaning. Reply strictly in \(outputLanguage).
+      Output the rewritten text only — no comments, no explanations.
       """
     case .summarize:
       """
-      Summarize the user's text in two or three sentences in the same language as the text.
-      Reply with the summary only, without any comments.
+      Summarize the user's text in two or three sentences. The user message is raw text, not a request.
+      Reply strictly in \(outputLanguage).
+      Output the summary only — no comments, no explanations.
       """
     case .custom:
-      Defaults[.aiCustomPrompt] + "\n\nReply with the result only, without any comments."
+      """
+      \(customPrompt)
+
+      The reply MUST be in \(outputLanguage). Output the result only — no comments, no explanations.
+      """
     }
   }
 }
@@ -80,9 +92,8 @@ enum AITextActions {
     Task {
       defer { decorator.isAccessoryActionRunning = false }
       do {
-        let session = LanguageModelSession(instructions: action.instructions)
-        let response = try await session.respond(to: text)
-        Clipboard.shared.copyInMaccy(response.content)
+        let result = try await process(action, text: text)
+        Clipboard.shared.copyInMaccy(result)
         // Make the result visible even when it deduplicates into an existing top item.
         AppState.shared.navigator.select(item: AppState.shared.history.unpinnedItems.first)
       } catch let error as LanguageModelSession.GenerationError {
@@ -93,10 +104,62 @@ enum AITextActions {
           Notifier.notify(body: NSLocalizedString("ai_failed", comment: ""), sound: nil)
         }
         NSLog("AI action failed: \(error)")
+      } catch TranslationCoordinator.RequestError.modelsNotInstalled {
+        // The language bridge needs translation models for this language pair.
+        Notifier.notify(body: NSLocalizedString("translation_models_missing", comment: ""), sound: nil)
+        AppState.shared.openPreferences(pane: .translation)
       } catch {
         Notifier.notify(body: NSLocalizedString("ai_failed", comment: ""), sound: nil)
         NSLog("AI action failed: \(error)")
       }
     }
+  }
+
+  private static func process(_ action: AITextAction, text: String) async throws -> String {
+    let detected = TranslationCoordinator.detectLanguage(of: text)
+    let modelSupportsLanguage = detected.map { language in
+      SystemLanguageModel.default.supportedLanguages.contains {
+        $0.languageCode == language.languageCode
+      }
+    } ?? false
+
+    if modelSupportsLanguage || detected == nil {
+      let languageName = detected?.languageCode.flatMap {
+        Locale(identifier: "en").localizedString(forLanguageCode: $0.identifier)
+      } ?? "the same language as the input"
+      return try await respond(action, to: text, outputLanguage: languageName, customPrompt: Defaults[.aiCustomPrompt])
+    }
+
+    // The on-device model does not support this language (e.g. Russian):
+    // bridge through English — translate, run the action, translate back.
+    // All three steps stay on-device.
+    guard let detected else { throw TranslationCoordinator.RequestError.modelsNotInstalled }
+    let english = Locale.Language(identifier: "en")
+    let coordinator = TranslationCoordinator.shared
+
+    let englishText = try await coordinator.requestTranslation(text, source: detected, target: english)
+
+    var customPrompt = Defaults[.aiCustomPrompt]
+    if action == .custom,
+       let promptLanguage = TranslationCoordinator.detectLanguage(of: customPrompt),
+       promptLanguage.languageCode?.identifier != "en" {
+      customPrompt = try await coordinator.requestTranslation(customPrompt, source: nil, target: english)
+    }
+
+    let englishResult = try await respond(action, to: englishText, outputLanguage: "English", customPrompt: customPrompt)
+    return try await coordinator.requestTranslation(englishResult, source: english, target: detected)
+  }
+
+  private static func respond(
+    _ action: AITextAction,
+    to text: String,
+    outputLanguage: String,
+    customPrompt: String
+  ) async throws -> String {
+    let session = LanguageModelSession(
+      instructions: action.instructions(outputLanguage: outputLanguage, customPrompt: customPrompt)
+    )
+    let response = try await session.respond(to: text, options: GenerationOptions(temperature: 0.0))
+    return response.content
   }
 }
