@@ -109,24 +109,29 @@ struct ListItemView<Title: View, ID: Hashable>: View {
         }
 
         if let accessorySymbol, let accessoryAction {
-          // Deliberately a tap gesture rather than a Button: the deepest gesture
-          // deterministically wins over the row's own onTapGesture, so clicking
-          // the icon can never fall through and select (and close) the row.
-          ZStack {
-            Image(systemName: accessorySymbol)
-              .opacity(accessoryBusy ? 0 : 1)
-            if accessoryBusy {
-              ProgressView()
-                .controlSize(.mini)
-            }
-          }
-          .frame(width: 18, height: 18)
-          .contentShape(Rectangle())
-          .onTapGesture {
+          // The button stays enabled while busy (the action guards instead):
+          // clicks on a disabled Button fall through to the row's tap gesture
+          // and would select the item and close the popup.
+          Button {
             if !accessoryBusy {
               accessoryAction()
             }
+          } label: {
+            ZStack {
+              Image(systemName: accessorySymbol)
+                .opacity(accessoryBusy ? 0 : 1)
+              if accessoryBusy {
+                ProgressView()
+                  .controlSize(.mini)
+              }
+            }
+            .frame(width: 18, height: 18)
+            .contentShape(Rectangle())
           }
+          .buttonStyle(.plain)
+          // macOS 26 does not hit-test views without a background (see the row
+          // background workaround below).
+          .background(Color.white.opacity(0.001))
           .help(accessoryHelp ?? "")
         }
       }
