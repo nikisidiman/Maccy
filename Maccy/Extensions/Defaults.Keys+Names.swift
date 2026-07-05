@@ -61,6 +61,8 @@ extension Defaults.Keys {
   static let showApplicationIcons = Key<Bool>("showApplicationIcons", default: false)
   static let showHexColorSwatch = Key<Bool>("showHexColorSwatch", default: true)
   static let previewWidth = Key<CGFloat>("previewWidth", default: 400)
+  static let displayedItems = Key<Int>("displayedItems", default: 20)
+  static let displayedItemsStep = Key<Int>("displayedItemsStep", default: 10)
   static let translationForeignLanguage = Key<String>("translationForeignLanguage", default: "en")
   static let translationNativeLanguage = Key<String>("translationNativeLanguage", default: "ru")
 }

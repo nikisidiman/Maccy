@@ -36,3 +36,8 @@
 "OpenPreferencesWarning" = "⚠️ Нажмите ⌘, (command+comma) чтобы открыть настройки когда нижний колонтитул скрыт.";
 "ShowHexColorSwatch" = "Показывать образец hex-цвета";
 "ShowHexColorSwatchTooltip" = "Показывать образец цвета рядом с hex-кодами цветов.";
+
+"DisplayedItems" = "Элементов в списке";
+"DisplayedItemsTooltip" = "Сколько незакреплённых элементов показывается сразу; остальные скрыты за строкой «Показать ещё».";
+"DisplayedItemsStep" = "Подгружать по";
+"DisplayedItemsStepTooltip" = "Сколько элементов добавляет каждый клик по «Показать ещё».";

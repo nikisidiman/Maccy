@@ -36,3 +36,8 @@
 "ShowHexColorSwatchTooltip" = "Show color swatch next to hex color codes.";
 "ShowFooter" = "Show footer";
 "OpenPreferencesWarning" = "⚠️ Press ⌘, (command+comma) to open preferences when footer is hidden.";
+
+"DisplayedItems" = "Items in list";
+"DisplayedItemsTooltip" = "How many unpinned items are visible at once; the rest are behind the “Show more” row.";
+"DisplayedItemsStep" = "Load more by";
+"DisplayedItemsStepTooltip" = "How many extra items each click on “Show more” reveals.";

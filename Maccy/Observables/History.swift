@@ -21,16 +21,14 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
 
   // Only this many unpinned items are shown at once; the "show more" row at the
   // bottom of the list reveals the next page. Keeps the popup compact and fast.
-  static let initialDisplayLimit = 20
-  static let displayLimitStep = 10
-
-  var displayLimit = History.initialDisplayLimit
+  // Both the limit and the page size are configurable in Appearance settings.
+  var displayLimit = Defaults[.displayedItems]
   var hasHiddenItems: Bool { unpinnedItems.count > displayLimit }
 
   var searchQuery: String = "" {
     didSet {
       throttler.throttle { [self] in
-        displayLimit = History.initialDisplayLimit
+        displayLimit = Defaults[.displayedItems]
         updateItems(search.search(string: searchQuery, within: all))
 
         if searchQuery.isEmpty {
@@ -78,6 +76,14 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
     Task {
       for await _ in Defaults.updates(.pasteByDefault, initial: false) {
         updateShortcuts()
+      }
+    }
+
+    Task {
+      for await _ in Defaults.updates(.displayedItems, initial: false) {
+        displayLimit = Defaults[.displayedItems]
+        updateUnpinnedShortcuts()
+        AppState.shared.popup.needsResize = true
       }
     }
 
@@ -503,14 +509,14 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
   }
 
   func showMoreItems() {
-    displayLimit += History.displayLimitStep
+    displayLimit += Defaults[.displayedItemsStep]
     updateUnpinnedShortcuts()
     AppState.shared.popup.needsResize = true
   }
 
   func resetDisplayLimit() {
-    guard displayLimit != History.initialDisplayLimit else { return }
-    displayLimit = History.initialDisplayLimit
+    guard displayLimit != Defaults[.displayedItems] else { return }
+    displayLimit = Defaults[.displayedItems]
     updateUnpinnedShortcuts()
     AppState.shared.popup.needsResize = true
   }

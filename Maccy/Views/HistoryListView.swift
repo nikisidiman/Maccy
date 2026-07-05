@@ -12,6 +12,7 @@ struct HistoryListView: View {
   @Default(.pinTo) private var pinTo
   @Default(.previewDelay) private var previewDelay
   @Default(.showFooter) private var showFooter
+  @Default(.displayedItemsStep) private var displayedItemsStep
 
   private var pinnedItems: [HistoryItemDecorator] {
     appState.history.pinnedItems.filter(\.isVisible)
@@ -104,7 +105,7 @@ struct HistoryListView: View {
           if appState.history.hasHiddenItems {
             HStack {
               Spacer()
-              Text("show_more_items")
+              Text(String(format: NSLocalizedString("show_more_items", comment: ""), displayedItemsStep))
                 .font(.callout)
                 .foregroundStyle(.secondary)
               Spacer()

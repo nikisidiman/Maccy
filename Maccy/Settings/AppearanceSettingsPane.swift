@@ -18,6 +18,8 @@ struct AppearanceSettingsPane: View {
   @Default(.showFooter) private var showFooter
   @Default(.windowPosition) private var windowPosition
   @Default(.showApplicationIcons) private var showApplicationIcons
+  @Default(.displayedItems) private var displayedItems
+  @Default(.displayedItemsStep) private var displayedItemsStep
 
   @State private var screens = NSScreen.screens
 
@@ -46,6 +48,20 @@ struct AppearanceSettingsPane: View {
     let formatter = NumberFormatter()
     formatter.minimum = 200
     formatter.maximum = 100_000
+    return formatter
+  }()
+
+  private let displayedItemsFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
+    formatter.minimum = 5
+    formatter.maximum = 200
+    return formatter
+  }()
+
+  private let displayedItemsStepFormatter: NumberFormatter = {
+    let formatter = NumberFormatter()
+    formatter.minimum = 1
+    formatter.maximum = 100
     return formatter
   }()
 
@@ -116,6 +132,26 @@ struct AppearanceSettingsPane: View {
             .labelsHidden()
         }
         .disabled(!openPreviewAutomatically)
+      }
+
+      Settings.Section(label: { Text("DisplayedItems", tableName: "AppearanceSettings") }) {
+        HStack {
+          TextField("", value: $displayedItems, formatter: displayedItemsFormatter)
+            .frame(width: 120)
+            .help(Text("DisplayedItemsTooltip", tableName: "AppearanceSettings"))
+          Stepper("", value: $displayedItems, in: 5...200)
+            .labelsHidden()
+        }
+      }
+
+      Settings.Section(label: { Text("DisplayedItemsStep", tableName: "AppearanceSettings") }) {
+        HStack {
+          TextField("", value: $displayedItemsStep, formatter: displayedItemsStepFormatter)
+            .frame(width: 120)
+            .help(Text("DisplayedItemsStepTooltip", tableName: "AppearanceSettings"))
+          Stepper("", value: $displayedItemsStep, in: 1...100)
+            .labelsHidden()
+        }
       }
 
       Settings.Section(

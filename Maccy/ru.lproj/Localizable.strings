@@ -35,4 +35,4 @@
 "ocr_no_text" = "Текст на изображении не распознан.";
 "translation_models_missing" = "Модели перевода не скачаны. Нажмите «Скачать языки» в Настройках Maccy → Перевод.";
 "translation_nothing_to_translate" = "В буфере обмена нет текста для перевода.";
-"show_more_items" = "Показать ещё 10…";
+"show_more_items" = "Показать ещё %d…";

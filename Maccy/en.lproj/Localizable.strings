@@ -35,4 +35,4 @@
 "ocr_no_text" = "No text was recognized in the image.";
 "translation_models_missing" = "Translation models are not downloaded. Click “Download languages” in Maccy Settings → Translation.";
 "translation_nothing_to_translate" = "The clipboard has no text to translate.";
-"show_more_items" = "Show 10 more…";
+"show_more_items" = "Show %d more…";
