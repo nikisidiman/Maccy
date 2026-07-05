@@ -89,6 +89,10 @@ where Content: View, Slideout: View {
           })
       )
       .disabled(controller.state != .open)
+      // The divider's padding and transparent background overflow its zero-width
+      // frame and sit on top of the accessory icons at the right edge of the rows,
+      // swallowing their clicks and hovers while the preview is closed.
+      .allowsHitTesting(controller.state == .open)
       .frame(maxWidth: 0)
       .opacity(controller.state != .closed ? 1 : 0)
   }
@@ -139,6 +143,11 @@ where Content: View, Slideout: View {
         maxWidth: controller.state == .closed ? 0 : nil
       )
       .clipped()
+      // clipped() trims only the drawing, not hit testing: the collapsed
+      // slideout content still overflows its zero-width frame and swallows
+      // clicks and hovers over the right edge of the list (the accessory
+      // icons) whenever the slideout is placed on the right.
+      .allowsHitTesting(controller.state != .closed)
       .readWidth(controller, into: \.slideoutResizeWidth)
     }
     .environment(\.layoutDirection, leftToRight ? .leftToRight : .rightToLeft)
