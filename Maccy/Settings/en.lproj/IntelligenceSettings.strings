@@ -5,3 +5,8 @@
 "OpenSystemSettings" = "Open System Settings…";
 "CustomPrompt" = "Custom prompt";
 "CustomPromptDescription" = "Adds a “Custom prompt” item to the ✨ menu that processes the text with this instruction. Leave empty to hide the item.";
+"FixTyposPrompt" = "“Fix typos” prompt";
+"RephrasePrompt" = "“Rewrite formally” prompt";
+"SummarizePrompt" = "“Summarize” prompt";
+"ResetPrompt" = "Reset to the default prompt";
+"PromptsDescription" = "Prompts can be written in any language — they are translated for the model automatically. The output language and “reply with the result only” are always enforced by Maccy. An emptied prompt falls back to the default.";
