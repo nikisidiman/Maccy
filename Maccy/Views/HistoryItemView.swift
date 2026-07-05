@@ -103,6 +103,8 @@ struct HistoryItemView: View {
           return
         }
         Clipboard.shared.copyInMaccy(text)
+        // Make the result visible even when it deduplicates into an existing top item.
+        appState.navigator.select(item: appState.history.unpinnedItems.first)
       } catch {
         Notifier.notify(body: NSLocalizedString("ocr_failed", comment: ""), sound: nil)
         NSLog("OCR failed: \(error)")

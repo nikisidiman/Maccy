@@ -101,6 +101,10 @@ final class TranslationCoordinator {
       Clipboard.shared.copyInMaccy(response.targetText)
       if shouldPaste {
         Clipboard.shared.paste()
+      } else {
+        // Make the result visible even when it deduplicates into an existing
+        // top item — otherwise a repeated translation looks like a no-op.
+        AppState.shared.navigator.select(item: AppState.shared.history.unpinnedItems.first)
       }
     } catch {
       Notifier.notify(body: NSLocalizedString("translation_failed", comment: ""), sound: nil)
