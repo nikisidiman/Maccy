@@ -130,7 +130,8 @@ struct ListItemView<Title: View, ID: Hashable>: View {
           .help(accessoryHelp ?? "")
         }
       }
-      .padding(.trailing, 10)
+      // Wide enough that the overlay scroll indicator doesn't cover the accessory icons.
+      .padding(.trailing, 16)
     }
     .frame(minHeight: Popup.itemHeight)
     .id(id)

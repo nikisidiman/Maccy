@@ -41,3 +41,5 @@
 "DisplayedItemsTooltip" = "How many unpinned items are visible at once; the rest are behind the “Show more” row.";
 "DisplayedItemsStep" = "Load more by";
 "DisplayedItemsStepTooltip" = "How many extra items each click on “Show more” reveals.";
+"OpenPreviewOnRightClick" = "Toggle preview with right click";
+"OpenPreviewOnRightClickTooltip" = "Right-click an item to open or close its preview. Automatic opening on hover is disabled while this is on.";

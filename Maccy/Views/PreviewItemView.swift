@@ -49,6 +49,9 @@ struct PreviewItemView: View {
             }
           }
         }
+        // AsyncView runs its operation once per view identity; without an explicit
+        // id, switching directly between two image items keeps the old image.
+        .id(item.id)
       } else {
         ScrollView {
           Text(item.text)

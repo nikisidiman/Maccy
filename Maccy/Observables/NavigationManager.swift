@@ -19,6 +19,10 @@ class NavigationManager { // swiftlint:disable:this type_body_length
   }
 
   var scrollTarget: UUID?
+
+  // True while the history list is actively scrolling; hover selection is
+  // suppressed during that time. Read only from event closures.
+  @ObservationIgnored var isScrolling = false
   var leadSelection: UUID? {
     if let item = leadHistoryItem {
       return item.id

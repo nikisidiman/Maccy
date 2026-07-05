@@ -61,7 +61,7 @@ class Popup {
     guard eventsMonitor == nil else { return }
 
     self.eventsMonitor = NSEvent.addLocalMonitorForEvents(
-      matching: [.flagsChanged, .keyDown],
+      matching: [.flagsChanged, .keyDown, .rightMouseDown],
       handler: handleEvent
     )
   }
@@ -128,9 +128,22 @@ class Popup {
       return handleKeyDown(event)
     case .flagsChanged:
       return handleFlagsChanged(event)
+    case .rightMouseDown:
+      return handleRightMouseDown(event)
     default:
       return event
     }
+  }
+
+  private func handleRightMouseDown(_ event: NSEvent) -> NSEvent? {
+    guard Defaults[.openPreviewOnRightClick],
+          let panel = AppState.shared.appDelegate?.panel,
+          event.window === panel else {
+      return event
+    }
+
+    AppState.shared.preview.togglePreview()
+    return nil
   }
 
   private func handleKeyDown(_ event: NSEvent) -> NSEvent? {

@@ -224,6 +224,8 @@ class SlideoutController {
     cancelAutoOpen()
 
     guard Defaults[.openPreviewAutomatically] else { return }
+    // In right-click mode the preview is toggled explicitly, never on hover.
+    guard !Defaults[.openPreviewOnRightClick] else { return }
     guard autoOpenEnabled else { return }
     guard !autoOpenSuppressed else { return }
     guard !state.isOpen else { return }

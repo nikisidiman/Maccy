@@ -164,6 +164,9 @@ struct HistoryListView: View {
       .contentMargins(.top, scrollTopPadding, for: .scrollIndicators)
       .contentMargins(.bottom, scrollBottomPadding, for: .scrollIndicators)
     }
+    .onScrollPhaseChange { _, newPhase in
+      appState.navigator.isScrolling = newPhase != .idle
+    }
 
     VStack(spacing: 0) {
       if bottomSeparatorVisible {
