@@ -19,9 +19,18 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
   var pinnedItems: [HistoryItemDecorator] { items.filter(\.isPinned) }
   var unpinnedItems: [HistoryItemDecorator] { items.filter(\.isUnpinned) }
 
+  // Only this many unpinned items are shown at once; the "show more" row at the
+  // bottom of the list reveals the next page. Keeps the popup compact and fast.
+  static let initialDisplayLimit = 20
+  static let displayLimitStep = 10
+
+  var displayLimit = History.initialDisplayLimit
+  var hasHiddenItems: Bool { unpinnedItems.count > displayLimit }
+
   var searchQuery: String = "" {
     didSet {
       throttler.throttle { [self] in
+        displayLimit = History.initialDisplayLimit
         updateItems(search.search(string: searchQuery, within: all))
 
         if searchQuery.isEmpty {
@@ -493,7 +502,24 @@ class History: ItemsContainer { // swiftlint:disable:this type_body_length
     item.item.title = title
   }
 
+  func showMoreItems() {
+    displayLimit += History.displayLimitStep
+    updateUnpinnedShortcuts()
+    AppState.shared.popup.needsResize = true
+  }
+
+  func resetDisplayLimit() {
+    guard displayLimit != History.initialDisplayLimit else { return }
+    displayLimit = History.initialDisplayLimit
+    updateUnpinnedShortcuts()
+    AppState.shared.popup.needsResize = true
+  }
+
   private func updateUnpinnedShortcuts() {
+    for (index, item) in unpinnedItems.enumerated() {
+      item.isVisible = index < displayLimit
+    }
+
     let visibleUnpinnedItems = unpinnedItems.filter(\.isVisible)
     for item in visibleUnpinnedItems {
       item.shortcuts = []

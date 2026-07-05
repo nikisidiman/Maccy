@@ -109,20 +109,24 @@ struct ListItemView<Title: View, ID: Hashable>: View {
         }
 
         if let accessorySymbol, let accessoryAction {
-          Button(action: accessoryAction) {
-            ZStack {
-              Image(systemName: accessorySymbol)
-                .opacity(accessoryBusy ? 0 : 1)
-              if accessoryBusy {
-                ProgressView()
-                  .controlSize(.mini)
-              }
+          // Deliberately a tap gesture rather than a Button: the deepest gesture
+          // deterministically wins over the row's own onTapGesture, so clicking
+          // the icon can never fall through and select (and close) the row.
+          ZStack {
+            Image(systemName: accessorySymbol)
+              .opacity(accessoryBusy ? 0 : 1)
+            if accessoryBusy {
+              ProgressView()
+                .controlSize(.mini)
             }
-            .frame(width: 18, height: 18)
-            .contentShape(Rectangle())
           }
-          .buttonStyle(.plain)
-          .disabled(accessoryBusy)
+          .frame(width: 18, height: 18)
+          .contentShape(Rectangle())
+          .onTapGesture {
+            if !accessoryBusy {
+              accessoryAction()
+            }
+          }
           .help(accessoryHelp ?? "")
         }
       }

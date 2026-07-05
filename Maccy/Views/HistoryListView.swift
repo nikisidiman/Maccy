@@ -96,8 +96,25 @@ struct HistoryListView: View {
 
     ScrollView {
       ScrollViewReader { proxy in
-        MultipleSelectionListView(items: unpinnedItems) { previous, item, next, index in
-          HistoryItemView(item: item, previous: previous, next: next, index: index)
+        VStack(spacing: 0) {
+          MultipleSelectionListView(items: unpinnedItems) { previous, item, next, index in
+            HistoryItemView(item: item, previous: previous, next: next, index: index)
+          }
+
+          if appState.history.hasHiddenItems {
+            HStack {
+              Spacer()
+              Text("show_more_items")
+                .font(.callout)
+                .foregroundStyle(.secondary)
+              Spacer()
+            }
+            .frame(minHeight: Popup.itemHeight)
+            .contentShape(Rectangle())
+            .onTapGesture {
+              appState.history.showMoreItems()
+            }
+          }
         }
         .padding(.top, scrollTopPadding)
         .padding(.bottom, scrollBottomPadding)
@@ -124,6 +141,7 @@ struct HistoryListView: View {
             modifierFlags.flags = []
             appState.navigator.isKeyboardNavigating = true
             appState.preview.cancelAutoOpen()
+            appState.history.resetDisplayLimit()
           }
         }
         // Calculate the total height inside a scroll view.
