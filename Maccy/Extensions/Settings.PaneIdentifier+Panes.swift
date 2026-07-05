@@ -1,5 +1,8 @@
 import Settings
 
+// Disambiguates from SwiftUI.Settings in files that import both modules.
+typealias SettingsPaneIdentifier = Settings.PaneIdentifier
+
 extension Settings.PaneIdentifier {
   static let advanced = Self("advanced")
   static let appearance = Self("appearance")

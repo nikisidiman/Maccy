@@ -106,7 +106,7 @@ class AppState: Sendable {
   }
 
   @MainActor
-  func openPreferences() { // swiftlint:disable:this function_body_length
+  func openPreferences(pane: SettingsPaneIdentifier? = nil) { // swiftlint:disable:this function_body_length
     if settingsWindowController == nil {
       settingsWindowController = SettingsWindowController(
         panes: [
@@ -164,7 +164,7 @@ class AppState: Sendable {
         ]
       )
     }
-    settingsWindowController?.show()
+    settingsWindowController?.show(pane: pane)
     settingsWindowController?.window?.orderFrontRegardless()
   }
 

@@ -1,4 +1,9 @@
 "Title" = "Translation";
 "MyLanguage" = "My language";
 "ForeignLanguage" = "Foreign language";
-"Description" = "Items in your language are translated to the foreign language; anything else is translated to your language. Translation runs on-device using Apple Translation; language models are downloaded by macOS on first use.";
+"Description" = "Items in your language are translated to the foreign language; anything else is translated to your language. Translation runs on-device using Apple Translation.";
+"LanguageModels" = "Language models";
+"DownloadLanguages" = "Download languages";
+"DownloadDone" = "Languages are downloaded and ready.";
+"DownloadFailed" = "Download failed or was cancelled.";
+"DownloadDescription" = "Downloads the on-device models for the selected languages. macOS will ask for confirmation.";
