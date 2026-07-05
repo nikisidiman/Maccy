@@ -8,6 +8,7 @@ extension NSImage {
   static let nosign = NSImage(systemSymbolName: "nosign", accessibilityDescription: "nosign")
   static let gearshape2 = NSImage(systemSymbolName: "gearshape.2", accessibilityDescription: "gearshape2")
   static let translate = NSImage(systemSymbolName: "translate", accessibilityDescription: "translate")
+  static let sparkles = NSImage(systemSymbolName: "sparkles", accessibilityDescription: "sparkles")
 }
 
 extension NSImage.Name {

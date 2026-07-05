@@ -36,3 +36,10 @@
 "translation_models_missing" = "Translation models are not downloaded. Click “Download languages” in Maccy Settings → Translation.";
 "translation_nothing_to_translate" = "The clipboard has no text to translate.";
 "show_more_items" = "Show %d more…";
+"ai_fix_typos" = "Fix typos";
+"ai_rephrase_formal" = "Rewrite formally";
+"ai_summarize" = "Summarize";
+"ai_custom" = "Custom prompt";
+"ai_unavailable" = "Apple Intelligence is not available. Enable it in System Settings.";
+"ai_failed" = "AI action failed.";
+"ai_too_long" = "The text is too long for the on-device model.";

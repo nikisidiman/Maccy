@@ -1,0 +1,7 @@
+"Title" = "AI";
+"Status" = "Apple Intelligence";
+"StatusAvailable" = "Available — actions run on-device.";
+"StatusUnavailable" = "Not available. Enable Apple Intelligence in System Settings and wait for the model to download.";
+"OpenSystemSettings" = "Open System Settings…";
+"CustomPrompt" = "Custom prompt";
+"CustomPromptDescription" = "Adds a “Custom prompt” item to the ✨ menu that processes the text with this instruction. Leave empty to hide the item.";

@@ -28,6 +28,12 @@ enum SelectionAppearance {
   }
 }
 
+struct AccessoryMenuItem: Identifiable {
+  let id = UUID()
+  let title: String
+  let action: () -> Void
+}
+
 struct ListItemView<Title: View, ID: Hashable>: View {
   var id: ID
   var selectionId: UUID
@@ -44,6 +50,8 @@ struct ListItemView<Title: View, ID: Hashable>: View {
   var accessoryBusy: Bool = false
   var accessoryHelp: LocalizedStringKey?
   var accessoryAction: (() -> Void)?
+  var accessoryMenuSymbol: String?
+  var accessoryMenuItems: [AccessoryMenuItem] = []
   @ViewBuilder var title: () -> Title
 
   @Default(.showApplicationIcons) private var showIcons
@@ -133,6 +141,23 @@ struct ListItemView<Title: View, ID: Hashable>: View {
           // background workaround below).
           .background(Color.white.opacity(0.001))
           .help(accessoryHelp ?? "")
+        }
+
+        if let accessoryMenuSymbol, !accessoryMenuItems.isEmpty {
+          Menu {
+            ForEach(accessoryMenuItems) { entry in
+              Button(entry.title, action: entry.action)
+            }
+          } label: {
+            Image(systemName: accessoryMenuSymbol)
+              .opacity(accessoryBusy ? 0.3 : 1)
+              .frame(width: 18, height: 18)
+              .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
+          .menuIndicator(.hidden)
+          .fixedSize()
+          .background(Color.white.opacity(0.001))
         }
       }
       // Wide enough that the overlay scroll indicator doesn't cover the accessory icons.

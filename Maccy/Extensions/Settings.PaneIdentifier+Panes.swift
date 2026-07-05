@@ -11,4 +11,5 @@ extension Settings.PaneIdentifier {
   static let pins = Self("pins")
   static let storage = Self("storage")
   static let translation = Self("translation")
+  static let intelligence = Self("intelligence")
 }
