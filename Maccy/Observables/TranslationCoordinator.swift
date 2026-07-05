@@ -1,5 +1,7 @@
+import AppKit
 import Defaults
 import Foundation
+import KeyboardShortcuts
 import NaturalLanguage
 import Observation
 import Translation
@@ -15,21 +17,42 @@ final class TranslationCoordinator {
   private var pendingText: String?
   private var pendingDecorator: HistoryItemDecorator?
   private var pendingStartedAt: Date?
+  private var pendingPaste = false
+
+  init() {
+    KeyboardShortcuts.onKeyDown(for: .translateAndPaste) { [weak self] in
+      self?.translateClipboardAndPaste()
+    }
+  }
 
   func translate(_ decorator: HistoryItemDecorator) {
+    startTranslation(text: decorator.item.previewableText, decorator: decorator, pasteAfter: false)
+  }
+
+  // Global hotkey: translate whatever is in the clipboard right now and paste
+  // the result into the frontmost application.
+  func translateClipboardAndPaste() {
+    guard let text = NSPasteboard.general.string(forType: .string),
+          !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+      Notifier.notify(body: NSLocalizedString("translation_nothing_to_translate", comment: ""), sound: nil)
+      return
+    }
+    startTranslation(text: text, decorator: nil, pasteAfter: true)
+  }
+
+  private func startTranslation(text: String, decorator: HistoryItemDecorator?, pasteAfter: Bool) {
     // A previous request that never completed must not block translation forever.
     if let startedAt = pendingStartedAt, Date().timeIntervalSince(startedAt) > 60 {
       resetPending()
     }
     guard pendingText == nil else { return } // one translation at a time
-
-    let text = decorator.item.previewableText
     guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
 
     pendingText = text
     pendingDecorator = decorator
     pendingStartedAt = Date()
-    decorator.isAccessoryActionRunning = true
+    pendingPaste = pasteAfter
+    decorator?.isAccessoryActionRunning = true
 
     Task {
       let (source, target) = direction(for: text)
@@ -70,11 +93,15 @@ final class TranslationCoordinator {
   func run(in session: TranslationSession) async {
     // Guards against spurious re-invocations (view re-appearing with a stale configuration).
     guard let text = pendingText else { return }
+    let shouldPaste = pendingPaste
     defer { resetPending() }
 
     do {
       let response = try await session.translate(text)
       Clipboard.shared.copyInMaccy(response.targetText)
+      if shouldPaste {
+        Clipboard.shared.paste()
+      }
     } catch {
       Notifier.notify(body: NSLocalizedString("translation_failed", comment: ""), sound: nil)
       NSLog("Translation failed: \(error)")
@@ -86,6 +113,7 @@ final class TranslationCoordinator {
     pendingDecorator?.isAccessoryActionRunning = false
     pendingDecorator = nil
     pendingStartedAt = nil
+    pendingPaste = false
   }
 
   // Text in the native language goes native→foreign; anything else goes →native

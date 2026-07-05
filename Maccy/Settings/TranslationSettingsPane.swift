@@ -1,5 +1,6 @@
 import SwiftUI
 import Defaults
+import KeyboardShortcuts
 import Settings
 import Translation
 
@@ -54,6 +55,17 @@ struct TranslationSettingsPane: View {
         .frame(width: 160, alignment: .leading)
 
         Text("Description", tableName: "TranslationSettings")
+          .controlSize(.small)
+          .foregroundStyle(.gray)
+          .fixedSize(horizontal: false, vertical: true)
+      }
+
+      Settings.Section(
+        bottomDivider: true,
+        label: { Text("TranslateAndPaste", tableName: "TranslationSettings") }
+      ) {
+        KeyboardShortcuts.Recorder(for: .translateAndPaste)
+        Text("TranslateAndPasteDescription", tableName: "TranslationSettings")
           .controlSize(.small)
           .foregroundStyle(.gray)
           .fixedSize(horizontal: false, vertical: true)

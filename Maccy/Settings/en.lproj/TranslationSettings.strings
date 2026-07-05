@@ -2,6 +2,8 @@
 "MyLanguage" = "My language";
 "ForeignLanguage" = "Foreign language";
 "Description" = "Items in your language are translated to the foreign language; anything else is translated to your language. Translation runs on-device using Apple Translation.";
+"TranslateAndPaste" = "Translate and paste";
+"TranslateAndPasteDescription" = "Global hotkey: translates the current clipboard text and pastes the result into the active application. The translation is also kept in history.";
 "LanguageModels" = "Language models";
 "DownloadLanguages" = "Download languages";
 "DownloadDone" = "Languages are downloaded and ready.";

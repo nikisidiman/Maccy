@@ -34,3 +34,4 @@
 "ocr_failed" = "Text recognition failed.";
 "ocr_no_text" = "No text was recognized in the image.";
 "translation_models_missing" = "Translation models are not downloaded. Click “Download languages” in Maccy Settings → Translation.";
+"translation_nothing_to_translate" = "The clipboard has no text to translate.";

@@ -12,14 +12,28 @@ enum TextRecognizer {
     }
 
     return try await Task.detached(priority: .userInitiated) {
-      let request = VNRecognizeTextRequest()
-      request.recognitionLevel = .accurate
-      request.recognitionLanguages = ["ru-RU", "en-US"]
-      request.usesLanguageCorrection = true
+      let barcodeRequest = VNDetectBarcodesRequest()
 
-      try VNImageRequestHandler(cgImage: cgImage).perform([request])
+      let textRequest = VNRecognizeTextRequest()
+      textRequest.recognitionLevel = .accurate
+      textRequest.recognitionLanguages = ["ru-RU", "en-US"]
+      textRequest.usesLanguageCorrection = true
 
-      return (request.results ?? [])
+      try VNImageRequestHandler(cgImage: cgImage).perform([barcodeRequest, textRequest])
+
+      // Barcodes (QR, DataMatrix, EAN, Code128, ...) take priority over plain text:
+      // when the image contains a decodable code, its payload is the result.
+      // GS1 payloads (e.g. DataMatrix from marking labels) are kept verbatim,
+      // including the invisible GS (0x1D) field separators.
+      var seen = Set<String>()
+      let payloads = (barcodeRequest.results ?? [])
+        .compactMap { $0.payloadStringValue }
+        .filter { !$0.isEmpty && seen.insert($0).inserted }
+      if !payloads.isEmpty {
+        return payloads.joined(separator: "\n")
+      }
+
+      return (textRequest.results ?? [])
         .compactMap { $0.topCandidates(1).first?.string }
         .joined(separator: "\n")
     }.value
