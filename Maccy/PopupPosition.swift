@@ -64,6 +64,16 @@ enum PopupPosition: String, CaseIterable, Identifiable, CustomStringConvertible,
 
     var point = NSEvent.mouseLocation
     point.y -= size.height
+
+    // Keep the popup fully on the screen the cursor is on — otherwise opening
+    // it near the bottom or right edge pushes part of the window off-screen.
+    if let screenFrame = NSScreen.screens.first(
+      where: { NSMouseInRect(NSEvent.mouseLocation, $0.frame, false) }
+    )?.visibleFrame {
+      point.x = min(max(point.x, screenFrame.minX), max(screenFrame.minX, screenFrame.maxX - size.width))
+      point.y = min(max(point.y, screenFrame.minY), max(screenFrame.minY, screenFrame.maxY - size.height))
+    }
+
     return point
   }
 }

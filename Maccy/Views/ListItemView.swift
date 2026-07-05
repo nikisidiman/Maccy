@@ -85,24 +85,6 @@ struct ListItemView<Title: View, ID: Hashable>: View {
       Spacer()
 
       HStack(spacing: 5) {
-        if let accessorySymbol, let accessoryAction {
-          Button(action: accessoryAction) {
-            ZStack {
-              Image(systemName: accessorySymbol)
-                .opacity(accessoryBusy ? 0 : 1)
-              if accessoryBusy {
-                ProgressView()
-                  .controlSize(.mini)
-              }
-            }
-            .frame(width: 18, height: 18)
-            .contentShape(Rectangle())
-          }
-          .buttonStyle(.plain)
-          .disabled(accessoryBusy)
-          .help(accessoryHelp ?? "")
-        }
-
         if let index = selectionIndex {
           Text("\(index + 1)")
             .font(.caption)
@@ -124,6 +106,24 @@ struct ListItemView<Title: View, ID: Hashable>: View {
                 .frame(width: visible ? nil : 0)
             }
           }
+        }
+
+        if let accessorySymbol, let accessoryAction {
+          Button(action: accessoryAction) {
+            ZStack {
+              Image(systemName: accessorySymbol)
+                .opacity(accessoryBusy ? 0 : 1)
+              if accessoryBusy {
+                ProgressView()
+                  .controlSize(.mini)
+              }
+            }
+            .frame(width: 18, height: 18)
+            .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
+          .disabled(accessoryBusy)
+          .help(accessoryHelp ?? "")
         }
       }
       .padding(.trailing, 10)
