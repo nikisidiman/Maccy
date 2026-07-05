@@ -16,6 +16,9 @@ struct VisualEffectView: NSViewRepresentable {
   }
 }
 
+// NSGlassEffectView exists only in the macOS 26 SDK (Xcode 26 / Swift 6.2+).
+// When built with an older toolchain, fall back to the regular blur background.
+#if compiler(>=6.2)
 @available(macOS 26.0, *)
 struct GlassEffectView: NSViewRepresentable {
   let glassEffectView = NSGlassEffectView()
@@ -30,6 +33,14 @@ struct GlassEffectView: NSViewRepresentable {
     glassEffectView.style = style
   }
 }
+#else
+@available(macOS 26.0, *)
+struct GlassEffectView: View {
+  var body: some View {
+    VisualEffectView()
+  }
+}
+#endif
 
 #Preview {
   VisualEffectView(

@@ -19,6 +19,7 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
   var attributedTitle: AttributedString?
 
   var isVisible: Bool = true
+  var isAccessoryActionRunning: Bool = false
   var selectionIndex: Int = -1
   var isSelected: Bool {
     return selectionIndex != -1

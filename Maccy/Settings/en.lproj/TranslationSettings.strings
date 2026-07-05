@@ -1,0 +1,4 @@
+"Title" = "Translation";
+"MyLanguage" = "My language";
+"ForeignLanguage" = "Foreign language";
+"Description" = "Items in your language are translated to the foreign language; anything else is translated to your language. Translation runs on-device using Apple Translation; language models are downloaded by macOS on first use.";

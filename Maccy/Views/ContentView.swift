@@ -1,9 +1,11 @@
 import SwiftData
 import SwiftUI
+import Translation
 
 struct ContentView: View {
   @State private var appState = AppState.shared
   @State private var modifierFlags = ModifierFlags()
+  @State private var translationCoordinator = TranslationCoordinator.shared
   @State private var scenePhase: ScenePhase = .background
 
   @FocusState private var searchFocused: Bool
@@ -59,6 +61,10 @@ struct ContentView: View {
     .animation(.easeInOut(duration: 0.2), value: appState.searchVisible)
     .environment(appState)
     .environment(modifierFlags)
+    .environment(translationCoordinator)
+    .translationTask(translationCoordinator.configuration) { session in
+      await translationCoordinator.run(in: session)
+    }
     .environment(\.scenePhase, scenePhase)
     // FloatingPanel is not a scene, so let's implement custom scenePhase..
     .onReceive(NotificationCenter.default.publisher(for: NSWindow.didBecomeKeyNotification)) {

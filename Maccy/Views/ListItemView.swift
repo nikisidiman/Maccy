@@ -40,6 +40,10 @@ struct ListItemView<Title: View, ID: Hashable>: View {
   var selectionIndex: Int?
   var help: LocalizedStringKey?
   var selectionAppearance: SelectionAppearance = .none
+  var accessorySymbol: String?
+  var accessoryBusy: Bool = false
+  var accessoryHelp: LocalizedStringKey?
+  var accessoryAction: (() -> Void)?
   @ViewBuilder var title: () -> Title
 
   @Default(.showApplicationIcons) private var showIcons
@@ -81,6 +85,24 @@ struct ListItemView<Title: View, ID: Hashable>: View {
       Spacer()
 
       HStack(spacing: 5) {
+        if let accessorySymbol, let accessoryAction {
+          Button(action: accessoryAction) {
+            ZStack {
+              Image(systemName: accessorySymbol)
+                .opacity(accessoryBusy ? 0 : 1)
+              if accessoryBusy {
+                ProgressView()
+                  .controlSize(.mini)
+              }
+            }
+            .frame(width: 18, height: 18)
+            .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
+          .disabled(accessoryBusy)
+          .help(accessoryHelp ?? "")
+        }
+
         if let index = selectionIndex {
           Text("\(index + 1)")
             .font(.caption)
