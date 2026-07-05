@@ -101,6 +101,18 @@ struct ToolbarView: View {
     return text.isEmpty ? nil : item.title
   }
 
+  private var selectedTextItem: HistoryItemDecorator? {
+    guard appState.navigator.selection.count == 1,
+          let item = appState.navigator.selection.first,
+          !item.hasImage,
+          item.item.fileURLs.isEmpty,
+          !item.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+      return nil
+    }
+
+    return item
+  }
+
   var body: some View {
     HStack {
       if !appState.navigator.selection.isEmpty {
@@ -115,6 +127,31 @@ struct ToolbarView: View {
           }
           .help(Text("CopyExtractedText", tableName: "PreviewItemView"))
           .disabled(selectedImageText == nil)
+        }
+
+        if let selectedTextItem {
+          Menu {
+            ForEach(AITextAction.enabledCases) { action in
+              Button(action.title) {
+                AITextActions.perform(action, on: selectedTextItem)
+              }
+            }
+          } label: {
+            Image(systemName: "sparkles")
+              .opacity(selectedTextItem.isAccessoryActionRunning ? 0.3 : 1)
+              .frame(height: 23)
+              .contentShape(Rectangle())
+          }
+          .buttonStyle(.plain)
+          .menuIndicator(.hidden)
+          .fixedSize()
+          // macOS 26 does not hit-test views without a background.
+          .background(Color.white.opacity(0.001))
+          .onHover { inside in
+            if let window = appState.appDelegate?.panel {
+              window.isMovableByWindowBackground = !inside
+            }
+          }
         }
 
         ToolbarButton {

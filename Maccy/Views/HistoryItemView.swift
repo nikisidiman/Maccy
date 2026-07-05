@@ -50,15 +50,6 @@ struct HistoryItemView: View {
     return nil
   }
 
-  private var aiMenuItems: [AccessoryMenuItem] {
-    guard isTranslatableText else { return [] }
-    return AITextAction.enabledCases.map { action in
-      .init(title: action.title) {
-        AITextActions.perform(action, on: item)
-      }
-    }
-  }
-
   var body: some View {
     ListItemView(
       id: item.id,
@@ -74,9 +65,7 @@ struct HistoryItemView: View {
       accessorySymbol: accessorySymbol,
       accessoryBusy: item.isAccessoryActionRunning,
       accessoryHelp: item.hasImage ? "ocr_tooltip" : "translate_tooltip",
-      accessoryAction: accessorySymbol == nil ? nil : { performAccessoryAction() },
-      accessoryMenuSymbol: aiMenuItems.isEmpty ? nil : "sparkles",
-      accessoryMenuItems: aiMenuItems
+      accessoryAction: accessorySymbol == nil ? nil : { performAccessoryAction() }
     ) {
       Text(verbatim: item.title)
     }
