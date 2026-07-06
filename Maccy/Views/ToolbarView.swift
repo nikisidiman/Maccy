@@ -129,7 +129,7 @@ struct ToolbarView: View {
           .disabled(selectedImageText == nil)
         }
 
-        if let selectedTextItem {
+        if #available(macOS 26.0, *), let selectedTextItem {
           Menu {
             ForEach(AITextAction.enabledCases) { action in
               Button(action.title) {

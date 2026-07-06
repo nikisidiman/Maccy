@@ -94,7 +94,7 @@ struct IntelligenceSettingsPane: View {
       }
     }
     .onAppear {
-      if case .available = SystemLanguageModel.default.availability {
+      if #available(macOS 26.0, *), case .available = SystemLanguageModel.default.availability {
         isModelAvailable = true
       } else {
         isModelAvailable = false

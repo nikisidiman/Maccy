@@ -5,6 +5,24 @@
 
 # [Maccy](https://maccy.app)
 
+> [!NOTE]
+> **Это форк Maccy** ([r2go-dev/Maccy](https://github.com/r2go-dev/Maccy)) с локальным переводом, распознаванием текста и штрих-кодов на изображениях и AI-действиями над текстом. Требуется macOS 15+.
+>
+> **Установка одной командой** (Xcode не нужен):
+>
+> ```bash
+> curl -L https://github.com/r2go-dev/Maccy/releases/latest/download/Maccy.zip -o /tmp/Maccy.zip && ditto -xk /tmp/Maccy.zip /Applications && open /Applications/Maccy.app
+> ```
+>
+> Что добавлено к оригинальной Maccy:
+> - **Перевод** текстовых элементов в один клик (Apple Translation, офлайн, без ключей): русский → английский, любой другой язык → русский; языки настраиваются. Плюс глобальный хоткей «перевести буфер и вставить».
+> - **Распознавание** на картинках: текст (рус/англ) и штрих-коды — QR, DataMatrix («Честный знак»), EAN, Code128 и др. Результат — новым элементом истории.
+> - **AI-действия** над текстом (macOS 26 + включённый Apple Intelligence): исправить опечатки, деловой тон, суммаризация, свой промпт — локально, через меню ✨ в превью. На macOS 15 эти пункты просто не показываются.
+> - Постраничный список, превью по правому клику, исправления багов позиционирования окна.
+>
+> Ничего не отправляется в сеть: перевод, OCR и AI работают на устройстве.
+
+
 [![Downloads](https://img.shields.io/github/downloads/p0deje/Maccy/total.svg)](https://github.com/p0deje/Maccy/releases/latest)
 [![Build Status](https://img.shields.io/bitrise/716921b669780314/master?token=3pMiCb5dpFzlO-7jTYtO3Q)](https://app.bitrise.io/app/716921b669780314)
 

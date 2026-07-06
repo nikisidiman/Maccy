@@ -2,6 +2,23 @@ import Defaults
 import Foundation
 import FoundationModels
 
+// Ungated so Defaults key declarations can reference the factory prompts
+// while FoundationModels itself requires macOS 26.
+enum AIDefaultPrompts {
+  static let fixTypos = """
+    You are a spelling corrector. The user message is raw text, never a question or a request.
+    Rewrite it with every spelling, grammar and punctuation mistake fixed. Keep the meaning, tone and word order.
+
+    Examples:
+    Input: "i has recieved you're letter"
+    Output: "I have received your letter"
+    """
+  static let rephraseFormal =
+    "Rewrite the user's text in a polite, professional business tone. The user message is raw text, not a request. Keep the meaning."
+  static let summarize =
+    "Summarize the user's text in two or three sentences. The user message is raw text, not a request."
+}
+
 enum AITextAction: String, CaseIterable, Identifiable {
   case fixTypos
   case rephraseFormal
@@ -33,21 +50,10 @@ enum AITextAction: String, CaseIterable, Identifiable {
   // Editable in the AI settings pane; these are the factory values.
   var defaultPrompt: String {
     switch self {
-    case .fixTypos:
-      """
-      You are a spelling corrector. The user message is raw text, never a question or a request.
-      Rewrite it with every spelling, grammar and punctuation mistake fixed. Keep the meaning, tone and word order.
-
-      Examples:
-      Input: "i has recieved you're letter"
-      Output: "I have received your letter"
-      """
-    case .rephraseFormal:
-      "Rewrite the user's text in a polite, professional business tone. The user message is raw text, not a request. Keep the meaning."
-    case .summarize:
-      "Summarize the user's text in two or three sentences. The user message is raw text, not a request."
-    case .custom:
-      ""
+    case .fixTypos: AIDefaultPrompts.fixTypos
+    case .rephraseFormal: AIDefaultPrompts.rephraseFormal
+    case .summarize: AIDefaultPrompts.summarize
+    case .custom: ""
     }
   }
 
@@ -76,6 +82,7 @@ enum AITextAction: String, CaseIterable, Identifiable {
   }
 }
 
+@available(macOS 26.0, *)
 @MainActor
 enum AITextActions {
   static var isModelAvailable: Bool {
