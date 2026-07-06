@@ -116,12 +116,33 @@ struct TranslationSettingsPane: View {
     // prompt can be presented here (unlike the nonactivating popup panel).
     .translationTask(downloadConfiguration) { session in
       guard downloadState == .running else { return }
+      let source = Locale.Language(identifier: nativeLanguage)
+      let target = Locale.Language(identifier: foreignLanguage)
+
+      // The system download sheet can lag behind the actual download, so the
+      // installed state is also polled in the background.
+      let poller = Task {
+        let availability = LanguageAvailability()
+        while !Task.isCancelled {
+          if case .installed = await availability.status(from: source, to: target) {
+            TranslationCoordinator.shared.markPairInstalled(source: source, target: target)
+            downloadState = .done
+            break
+          }
+          try? await Task.sleep(for: .seconds(2))
+        }
+      }
+      defer { poller.cancel() }
+
       do {
         try await session.prepareTranslation()
+        TranslationCoordinator.shared.markPairInstalled(source: source, target: target)
         downloadState = .done
       } catch {
         NSLog("Translation model download failed: \(error)")
-        downloadState = .failed
+        if downloadState != .done {
+          downloadState = .failed
+        }
       }
     }
   }

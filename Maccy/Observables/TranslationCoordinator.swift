@@ -26,6 +26,23 @@ final class TranslationCoordinator {
   }
   private var pendingRequest: PendingRequest?
 
+  // LanguageAvailability caches its answer for the lifetime of the process:
+  // models downloaded from the settings pane still report .supported until
+  // the app restarts. Pairs downloaded this session are tracked here so the
+  // pre-check can be bypassed for them.
+  @ObservationIgnored private var sessionInstalledPairs: Set<String> = []
+
+  private static func pairKey(_ source: Locale.Language?, _ target: Locale.Language) -> String {
+    "\(source?.languageCode?.identifier ?? "auto")->\(target.languageCode?.identifier ?? "?")"
+  }
+
+  func markPairInstalled(source: Locale.Language, target: Locale.Language) {
+    sessionInstalledPairs.insert(Self.pairKey(source, target))
+    sessionInstalledPairs.insert(Self.pairKey(target, source))
+    sessionInstalledPairs.insert(Self.pairKey(nil, target))
+    sessionInstalledPairs.insert(Self.pairKey(nil, source))
+  }
+
   init() {
     KeyboardShortcuts.onKeyDown(for: .translateAndPaste) { [weak self] in
       self?.translateClipboardAndPaste()
@@ -105,14 +122,16 @@ final class TranslationCoordinator {
     // cannot be presented from here — sending an unprepared pair into
     // translationTask would hang forever. Models are downloaded from the
     // Translation settings pane instead.
-    let availability = LanguageAvailability()
-    let status: LanguageAvailability.Status
-    if let source {
-      status = await availability.status(from: source, to: target)
-    } else {
-      status = (try? await availability.status(for: text, to: target)) ?? .unsupported
+    if !sessionInstalledPairs.contains(Self.pairKey(source, target)) {
+      let availability = LanguageAvailability()
+      let status: LanguageAvailability.Status
+      if let source {
+        status = await availability.status(from: source, to: target)
+      } else {
+        status = (try? await availability.status(for: text, to: target)) ?? .unsupported
+      }
+      guard case .installed = status else { throw RequestError.modelsNotInstalled }
     }
-    guard case .installed = status else { throw RequestError.modelsNotInstalled }
 
     return try await withCheckedThrowingContinuation { continuation in
       pendingRequest = PendingRequest(text: text, startedAt: Date(), continuation: continuation)
