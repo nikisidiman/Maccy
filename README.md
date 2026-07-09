@@ -6,12 +6,12 @@
 # [Maccy](https://maccy.app)
 
 > [!NOTE]
-> **Это форк Maccy** ([r2go-dev/Maccy](https://github.com/r2go-dev/Maccy)) с локальным переводом, распознаванием текста и штрих-кодов на изображениях и AI-действиями над текстом. Требуется macOS 15+.
+> **Это форк Maccy** ([nikisidiman/Maccy](https://github.com/nikisidiman/Maccy)) с локальным переводом, распознаванием текста и штрих-кодов на изображениях и AI-действиями над текстом. Требуется macOS 15+.
 >
 > **Установка одной командой** (Xcode не нужен):
 >
 > ```bash
-> curl -L https://github.com/r2go-dev/Maccy/releases/latest/download/Maccy.zip -o /tmp/Maccy.zip && ditto -xk /tmp/Maccy.zip /Applications && open /Applications/Maccy.app
+> curl -L https://github.com/nikisidiman/Maccy/releases/latest/download/Maccy.zip -o /tmp/Maccy.zip && ditto -xk /tmp/Maccy.zip /Applications && open /Applications/Maccy.app
 > ```
 >
 > Что добавлено к оригинальной Maccy:

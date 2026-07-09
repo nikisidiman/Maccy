@@ -33,6 +33,6 @@
 	<key>SUEnableInstallerLauncherService</key>
 	<true/>
 	<key>SUFeedURL</key>
-	<string>https://raw.githubusercontent.com/r2go-dev/Maccy/master/appcast.xml</string>
+	<string>https://raw.githubusercontent.com/nikisidiman/Maccy/master/appcast.xml</string>
 </dict>
 </plist>
