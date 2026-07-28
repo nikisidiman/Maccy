@@ -208,6 +208,13 @@ class Clipboard {
         types = types.subtracting([.microsoftLinkSource, .microsoftObjectLink, .pdf])
       }
 
+      // Copied images often come as both PNG and TIFF; the uncompressed TIFF
+      // of a Retina screenshot is tens of megabytes and merely duplicates the
+      // PNG, bloating both the database and the resident memory. Keep PNG only.
+      if types.contains(.png) {
+        types = types.subtracting([.tiff])
+      }
+
       types.forEach { type in
         contents.append(HistoryItemContent(type: type.rawValue, value: item.data(forType: type)))
       }
