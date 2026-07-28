@@ -108,6 +108,7 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
   @MainActor
   func asyncGetPreviewImage() async -> NSImage? {
     if let image = previewImage {
+      PreviewImageCache.shared.touch(self)
       return image
     }
     ensurePreviewImage()
@@ -116,13 +117,22 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
   }
 
   @MainActor
-  func cleanupImages() {
-    thumbnailImageGenerationTask?.cancel()
+  func releasePreviewImage(notifyCache: Bool = true) {
+    if notifyCache {
+      PreviewImageCache.shared.forget(self)
+    }
     previewImageGenerationTask?.cancel()
-    thumbnailImage?.recache()
+    previewImageGenerationTask = nil
     previewImage?.recache()
-    thumbnailImage = nil
     previewImage = nil
+  }
+
+  @MainActor
+  func cleanupImages() {
+    releasePreviewImage()
+    thumbnailImageGenerationTask?.cancel()
+    thumbnailImage?.recache()
+    thumbnailImage = nil
   }
 
   @MainActor
@@ -139,6 +149,9 @@ class HistoryItemDecorator: Identifiable, Hashable, HasVisibility {
       return
     }
     previewImage = image.resized(to: HistoryItemDecorator.previewImageSize)
+    if let previewImage {
+      PreviewImageCache.shared.track(self, image: previewImage)
+    }
   }
 
   @MainActor
