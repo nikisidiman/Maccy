@@ -101,6 +101,16 @@ struct ToolbarView: View {
     return text.isEmpty ? nil : item.title
   }
 
+  private var savableItem: HistoryItemDecorator? {
+    guard appState.navigator.selection.count == 1,
+          let item = appState.navigator.selection.first,
+          item.hasImage || !item.item.fileURLs.isEmpty else {
+      return nil
+    }
+
+    return item
+  }
+
   private var selectedTextItem: HistoryItemDecorator? {
     guard appState.navigator.selection.count == 1,
           let item = appState.navigator.selection.first,
@@ -117,6 +127,15 @@ struct ToolbarView: View {
     HStack {
       if !appState.navigator.selection.isEmpty {
         Spacer()
+
+        if let savableItem {
+          ToolbarButton {
+            FileSaver.save(savableItem)
+          } label: {
+            Image(systemName: "square.and.arrow.down")
+          }
+          .help(Text("SaveToMaccyFiles", tableName: "PreviewItemView"))
+        }
 
         if selectedImageItem != nil {
           ToolbarButton {

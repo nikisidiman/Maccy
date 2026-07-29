@@ -8,3 +8,4 @@
 "DeleteKey" = "Press {deleteKey} to delete.";
 "PreviewKey" = "Press {previewKey} to toggle preview.";
 "CopyExtractedText" = "Copy extracted text.";
+"SaveToMaccyFiles" = "Save to “Maccy Files” in Downloads.";
