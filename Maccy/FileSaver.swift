@@ -65,22 +65,31 @@ enum FileSaver {
       return savedURL
     }
 
-    // Image items: write the stored representation as-is.
-    let imageTypes: [(NSPasteboard.PasteboardType, String)] = [
-      (.png, "png"), (.jpeg, "jpeg"), (.heic, "heic"), (.tiff, "tiff")
-    ]
-    for (type, ext) in imageTypes {
-      guard let content = item.contents.first(where: { $0.type == type.rawValue }),
-            let data = content.value else { continue }
+    // Image items: always save as PNG for predictable sharing.
+    if let pngData = pngData(of: item) {
       let formatter = DateFormatter()
       formatter.dateFormat = "yyyy-MM-dd 'at' HH.mm.ss"
-      let name = "Image \(formatter.string(from: Date())).\(ext)"
+      let name = "Image \(formatter.string(from: Date())).png"
       let destination = uniqueURL(for: folder.appendingPathComponent(name))
-      try data.write(to: destination)
+      try pngData.write(to: destination)
       return destination
     }
 
     throw SaveError.nothingToSave
+  }
+
+  private static func pngData(of item: HistoryItem) -> Data? {
+    if let content = item.contents.first(where: { $0.type == NSPasteboard.PasteboardType.png.rawValue }),
+       let data = content.value {
+      return data
+    }
+
+    // TIFF/JPEG/HEIC representations are converted.
+    guard let data = item.imageData,
+          let representation = NSBitmapImageRep(data: data) else {
+      return nil
+    }
+    return representation.representation(using: .png, properties: [:])
   }
 
   private static func uniqueURL(for url: URL) -> URL {
